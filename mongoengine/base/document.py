@@ -293,6 +293,8 @@ class BaseDocument(object):
         def get_db_value(field, value):
             if value is None:
                 value = field.default() if callable(field.default) else field.default
+            if value is None:
+                return None
             return field.to_mongo(value)
 
 
