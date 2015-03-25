@@ -174,7 +174,7 @@ class Document(BaseDocument):
 
     def save(self, validate=True, clean=True,
              write_concern=None,  cascade=None, cascade_kwargs=None,
-             _refs=None, full=False, **kwargs):
+             _refs=None, full=False, save_condition=None, **kwargs):
         """Save the :class:`~mongoengine.Document` to the database. If the
         document already exists, it will be updated, otherwise it will be
         created.
@@ -235,7 +235,10 @@ class Document(BaseDocument):
                     update_query['$unset'] = unsets
 
                 if update_query:
-                    collection.update(self._db_object_key, update_query, **write_concern)
+                    select_query = dict(self._db_object_key)
+                    if save_condition is not None:
+                        select_query.update(save_condition)
+                    collection.update(select_query, update_query, **write_concern)
 
                 created = False
             else:
